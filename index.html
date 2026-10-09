@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Процедурный кабинет</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#EEF4F5;--ink:#10303A;--mute:#5A7580;--card:#fff;--line:#CFDDE1;--teal:#0B7A85;--teal-ink:#fff;--amber:#B87800;--green:#1F7A48;--red:#B3443A;--freebg:#E6F5EC;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1B20;--ink:#E3EFF1;--mute:#8FA8B0;--card:#14282F;--line:#25414A;--teal:#35B6C2;--teal-ink:#06262B;--amber:#E3A21A;--green:#4DBB82;--red:#E07468;--freebg:#10352A}}
+:root[data-theme="dark"]{--bg:#0D1B20;--ink:#E3EFF1;--mute:#8FA8B0;--card:#14282F;--line:#25414A;--teal:#35B6C2;--teal-ink:#06262B;--amber:#E3A21A;--green:#4DBB82;--red:#E07468;--freebg:#10352A}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 Onest,system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+h1{font-size:21px;margin:0;font-weight:800}
+button{font:inherit;cursor:pointer}
+.lang button{background:none;border:1px solid var(--line);color:var(--ink);padding:7px 11px;border-radius:6px}
+.lang button.on{background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+nav{display:flex;border-bottom:2px solid var(--line);margin-bottom:12px}
+nav button{flex:1;background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:12px 4px;font-weight:700;color:var(--mute)}
+nav button.on{color:var(--teal);border-color:var(--teal)}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.row button,.chip{min-height:44px;padding:8px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font-weight:600}
+.chip.on{background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+input,select{width:100%;min-height:46px;padding:10px 12px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px}
+.row input[type=date]{flex:1;min-width:150px}
+label{display:block;font-weight:600;margin:10px 0 4px}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:52px;padding:8px 14px;margin-bottom:6px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left}
+.slot.free{background:var(--freebg);border:2px solid var(--green);font-size:18px;color:var(--ink)}
+.slot.free b{color:var(--green)}
+.slot.busy{border-left:8px solid var(--amber);align-items:flex-start}
+.slot.cont{opacity:.55;min-height:36px;padding:4px 14px;border-left:8px solid var(--amber)}
+.slot.na{opacity:.4;min-height:36px;padding:4px 14px}
+.act{display:flex;gap:6px;flex-wrap:wrap}
+.btn{min-height:46px;padding:10px 16px;border:0;border-radius:10px;background:var(--teal);color:var(--teal-ink);font-weight:800}
+.btn.alt{background:none;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{min-height:40px;padding:6px 12px;font-weight:700}
+.btn.danger{background:none;border:1px solid var(--red);color:var(--red)}
+.panel{background:var(--card);border:2px solid var(--teal);border-radius:12px;padding:14px;margin-bottom:12px}
+.panel .act{margin-top:12px}
+.ok{background:var(--card);border:2px solid var(--green);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.err{background:var(--card);border:2px solid var(--red);border-radius:12px;padding:12px 14px;margin-bottom:12px;color:var(--red);font-weight:600}
+.item{background:var(--card);border:1px solid var(--line);border-left:8px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.item.wait{border-left-color:var(--amber)}.item.called,.item.inproc{border-left-color:var(--teal)}.item.done{border-left-color:var(--green);opacity:.75}.item.cancelled,.item.noshow{border-left-color:var(--red);opacity:.6}
+.item h3{margin:0;font-size:18px}
+.meta{color:var(--mute);font-size:15px}
+.tag{font-weight:800;font-size:15px}
+.now{background:var(--teal);color:var(--teal-ink);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.empty{color:var(--mute);text-align:center;padding:26px 8px}
+.g2{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+.g2 label{margin:0;display:flex;gap:6px;align-items:center;font-weight:600}
+.g2 input[type=checkbox]{width:22px;min-height:22px}
+@media (max-width:520px){.g2{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><h1 id="ttl"></h1><div class="lang"><button data-act="lang" data-v="ru">RU</button> <button data-act="lang" data-v="kk">ҚАЗ</button></div></header>
+<nav id="nav"></nav>
+<div id="note" class="meta" style="margin-bottom:8px"></div>
+<div id="msg"></div>
+<div id="view"><div id="ctl"></div><div id="frm"></div><div id="lst"></div></div>
+</main>
+<script>
+const T={ru:{title:"Процедурный кабинет",slots:"Запись",queue:"Очередь",admin:"Настройки",today:"Сегодня",room:"Кабинет",proc:"Процедура",all:"Все",free:"Свободно",busy:"Занято",name:"Имя пациента",phone:"Телефон",iin:"ИИН (необязательно)",book:"Записать",cancel:"Отмена",move:"Перенести",del:"Отменить",moving:"Выберите новое время для",moveX:"Не переносить",needs:"Укажите имя и телефон.",taken:"Это время только что заняли. Выберите другое.",lockb:"Кабинет сейчас оформляет другой оператор. Попробуйте ещё раз.",fail:"Не удалось сохранить. Проверьте доступ и повторите.",done:"Записан",nodb:"Нет доступа к общей базе данных. Откройте страницу под своей учётной записью с правом редактирования.",noQ:"На эту дату записей нет.",nowIn:"Сейчас",save:"Сохранить",saved:"Сохранено",addR:"+ Кабинет",addP:"+ Процедура",rooms:"Кабинеты и специалисты",procs:"Процедуры",dur:"Минут",on:"Работает",staff:"Специалист",rn:"Название",st:{wait:"Ожидает",called:"Вызван",inproc:"На процедуре",done:"Завершено",cancelled:"Отменено",noshow:"Не явился"},next:{wait:[["called","Позвать"],["noshow","Не явился"],["cancelled","Отменить"]],called:[["inproc","На процедуру"],["noshow","Не явился"]],inproc:[["done","Завершить"]]}},
+kk:{title:"Процедуралық кабинет",slots:"Жазу",queue:"Кезек",admin:"Баптаулар",today:"Бүгін",room:"Кабинет",proc:"Процедура",all:"Барлығы",free:"Бос",busy:"Бос емес",name:"Пациенттің аты",phone:"Телефон",iin:"ЖСН (міндетті емес)",book:"Жазу",cancel:"Болдырмау",move:"Ауыстыру",del:"Жою",moving:"Жаңа уақытты таңдаңыз:",moveX:"Ауыстырмау",needs:"Аты мен телефонды көрсетіңіз.",taken:"Бұл уақытты жаңа ғана алды. Басқасын таңдаңыз.",lockb:"Кабинетті қазір басқа оператор рәсімдеп жатыр. Қайта көріңіз.",fail:"Сақталмады. Қолжетімділікті тексеріп, қайталаңыз.",done:"Жазылды",nodb:"Ортақ дерекқорға қолжетімділік жоқ. Бетті өңдеу құқығы бар есептік жазбамен ашыңыз.",noQ:"Бұл күнге жазылулар жоқ.",nowIn:"Қазір",save:"Сақтау",saved:"Сақталды",addR:"+ Кабинет",addP:"+ Процедура",rooms:"Кабинеттер мен мамандар",procs:"Процедуралар",dur:"Минут",on:"Жұмыс істейді",staff:"Маман",rn:"Атауы",st:{wait:"Күтуде",called:"Шақырылды",inproc:"Процедурада",done:"Аяқталды",cancelled:"Жойылды",noshow:"Келмеді"},next:{wait:[["called","Шақыру"],["noshow","Келмеді"],["cancelled","Жою"]],called:[["inproc","Процедураға"],["noshow","Келмеді"]],inproc:[["done","Аяқтау"]]}}};
+const DEF={rooms:[{id:"r1",name:"Кабинет 1",staff:"Медсестра 1",on:1},{id:"r2",name:"Кабинет 2",staff:"Медсестра 2",on:1}],procs:[{id:"p1",name:"Укол внутримышечный",dur:30,on:1},{id:"p2",name:"Укол внутривенный",dur:30,on:1},{id:"p3",name:"Система (капельница)",dur:60,on:1}]};
+const OPEN=540,CLOSE=1080,HID=Math.random().toString(36).slice(2);
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0"),fmt=m=>pad(Math.floor(m/60))+":"+pad(m%60);
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const addDays=(s,n)=>{const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return iso(d)};
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const t=()=>T[L],act1=b=>b.status!=="cancelled"&&b.status!=="noshow";
+let L="ru",tab="slots",db=null,user=null,isAdmin=false,cfg=JSON.parse(JSON.stringify(DEF)),date=iso(new Date()),roomId=null,procId=null,qRoom="",B=[],unsub=null,mv=null,draft=null,adm=null;
+const room=id=>cfg.rooms.find(r=>r.id===id)||{name:"?",staff:""},proc=id=>cfg.procs.find(p=>p.id===id)||{name:"?",dur:30};
+const rooms=()=>cfg.rooms.filter(r=>r.on),procs=()=>cfg.procs.filter(p=>p.on);
+function fixSel(){if(!rooms().some(r=>r.id===roomId))roomId=rooms()[0]&&rooms()[0].id;if(!procs().some(p=>p.id===procId))procId=procs()[0]&&procs()[0].id}
+function show(kind,text){$("#msg").innerHTML=text?'<div class="'+kind+'" role="status">'+text+'</div>':""}
+function sub(){if(unsub)unsub();if(!db)return;unsub=db.collection("bookings").where("date","==",date).onSnapshot(s=>{B=s.docs.map(d=>Object.assign({id:d.id},d.data()));renderList()},()=>show("err",t().fail))}
+function head(){document.documentElement.lang=L==="kk"?"kk":"ru";$("#ttl").textContent=t().title;$("#note").textContent=L==="kk"?"Деректер осы браузерде сақталады":"Данные хранятся в этом браузере";document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.v===L));
+const tabs=["slots","queue"].concat(isAdmin?["admin"]:[]);$("#nav").innerHTML=tabs.map(k=>'<button data-act="tab" data-v="'+k+'" class="'+(tab===k?"on":"")+'">'+t()[k]+'</button>').join("")}
+function dateBar(){return '<div class="row"><button data-act="d" data-v="-1" aria-label="-1">‹</button><input type="date" id="dt" value="'+date+'"><button data-act="d" data-v="1" aria-label="+1">›</button><button data-act="d" data-v="0">'+t().today+'</button></div>'}
+function chips(all){return '<div class="row">'+(all?'<button class="chip '+(qRoom===""?"on":"")+'" data-act="qroom" data-v="">'+t().all+'</button>':"")+rooms().map(r=>'<button class="chip '+((all?qRoom:roomId)===r.id?"on":"")+'" data-act="'+(all?"qroom":"room")+'" data-v="'+r.id+'">'+esc(r.name)+'<br><small>'+esc(r.staff)+'</small></button>').join("")+'</div>'}
+function renderTab(){head();if(!db){$("#ctl").innerHTML="";$("#lst").innerHTML="";show("err",t().nodb);return}
+if(tab==="slots"){$("#ctl").innerHTML=dateBar()+chips(false)+'<div class="row"><select id="pr" aria-label="'+t().proc+'">'+procs().map(p=>'<option value="'+p.id+'"'+(p.id===procId?" selected":"")+'>'+esc(p.name)+' · '+p.dur+'</option>').join("")+'</select></div>';renderList()}
+else if(tab==="queue"){$("#ctl").innerHTML=dateBar()+chips(true);renderList()}
+else{$("#ctl").innerHTML="";adm=JSON.parse(JSON.stringify(cfg));renderAdmin()}}
+function renderList(){const l=$("#lst");if(!l||!db)return;if(tab==="slots")l.innerHTML=slotsHtml();else if(tab==="queue")l.innerHTML=queueHtml()}
+const overlap=(r,s,e,ex)=>B.some(b=>b.roomId===r&&act1(b)&&b.id!==ex&&b.start<e&&b.end>s);
+function slotsHtml(){const x=t(),mb=mv&&B.find(b=>b.id===mv),dur=mb?mb.end-mb.start:proc(procId).dur,now=new Date(),td=iso(now),cur=date<td?9999:date===td?now.getHours()*60+now.getMinutes():-1;
+let h=mb?'<div class="panel">'+x.moving+' <b>'+esc(mb.name)+'</b><div class="act"><button class="btn alt sm" data-act="mvx">'+x.moveX+'</button></div></div>':"";
+for(let m=OPEN;m<CLOSE;m+=30){const bk=B.find(b=>b.roomId===roomId&&act1(b)&&b.start<=m&&m<b.end);
+if(bk){if(bk.start===m||m===OPEN)h+='<div class="slot busy"><div><b>'+fmt(m)+'</b> '+x.busy+' · №'+bk.n+'<br>'+esc(proc(bk.procId).name)+' · '+esc(room(bk.roomId).name)+' · '+esc(room(bk.roomId).staff)+'<br><span class="meta">'+esc(bk.name)+' · '+esc(bk.phone)+' · '+fmt(bk.start)+'–'+fmt(bk.end)+'</span></div><div class="act"><button class="btn alt sm" data-act="move" data-v="'+bk.id+'">'+x.move+'</button><button class="btn danger sm" data-act="st" data-v="'+bk.id+'|cancelled">'+x.del+'</button></div></div>';
+else h+='<div class="slot busy cont">'+fmt(m)+' · '+x.busy+'</div>'}
+else{const ok=m>cur&&m+dur<=CLOSE&&!overlap(roomId,m,m+dur,mb&&mb.id);h+=ok?'<button class="slot free" data-act="slot" data-v="'+m+'"><span><b>'+fmt(m)+'</b> '+x.free+'</span></button>':'<div class="slot na">'+fmt(m)+' —</div>'}}
+return h}
+function queueHtml(){const x=t(),L2=B.filter(b=>!qRoom||b.roomId===qRoom).sort((a,b)=>a.start-b.start||a.n-b.n);if(!L2.length)return '<p class="empty">'+x.noQ+'</p>';
+const nw=L2.filter(b=>b.status==="called"||b.status==="inproc");
+let h=nw.length?'<div class="now">'+nw.map(b=>'<div><b>'+x.nowIn+': №'+b.n+'</b> · '+esc(b.name)+' · '+esc(room(b.roomId).name)+' · '+x.st[b.status]+'</div>').join("")+'</div>':"";
+return h+L2.map(b=>'<div class="item '+b.status+'"><h3>№'+b.n+' · '+esc(b.name)+'</h3><div class="meta">'+fmt(b.start)+' · '+esc(proc(b.procId).name)+' · '+esc(room(b.roomId).name)+' · '+esc(room(b.roomId).staff)+' · '+esc(b.phone)+'</div><div class="tag">'+x.st[b.status]+'</div><div class="act" style="margin-top:8px">'+(x.next[b.status]||[]).map(n=>'<button class="btn sm '+(n[0]==="cancelled"||n[0]==="noshow"?"alt":"")+'" data-act="st" data-v="'+b.id+'|'+n[0]+'">'+n[1]+'</button>').join("")+'</div></div>').join("")}
+function renderAdmin(){const x=t();let h='<h2>'+x.rooms+'</h2>'+adm.rooms.map((r,i)=>'<div class="g2"><input data-g="rooms" data-i="'+i+'" data-f="name" value="'+esc(r.name)+'" placeholder="'+x.rn+'" aria-label="'+x.rn+'"><input data-g="rooms" data-i="'+i+'" data-f="staff" value="'+esc(r.staff)+'" placeholder="'+x.staff+'" aria-label="'+x.staff+'"><label><input type="checkbox" data-g="rooms" data-i="'+i+'" data-f="on" '+(r.on?"checked":"")+'>'+x.on+'</label></div>').join("")+'<button class="btn alt sm" data-act="addR">'+x.addR+'</button><h2>'+x.procs+'</h2>'+adm.procs.map((p,i)=>'<div class="g2"><input data-g="procs" data-i="'+i+'" data-f="name" value="'+esc(p.name)+'" placeholder="'+x.rn+'" aria-label="'+x.rn+'"><input type="number" min="5" step="5" data-g="procs" data-i="'+i+'" data-f="dur" value="'+p.dur+'" aria-label="'+x.dur+'"><label><input type="checkbox" data-g="procs" data-i="'+i+'" data-f="on" '+(p.on?"checked":"")+'>'+x.on+'</label></div>').join("")+'<button class="btn alt sm" data-act="addP">'+x.addP+'</button><div style="margin-top:16px"><button class="btn" data-act="saveCfg">'+x.save+'</button></div>';$("#lst").innerHTML=h}
+async function lock(key,fn){const r=await db.doc("locks/"+key).acquire({holder:HID,ttlMs:5000});if(!r.acquired)throw "busy";return fn()}
+const fresh=async()=>(await db.collection("bookings").where("date","==",date).get()).docs.map(d=>Object.assign({id:d.id},d.data()));
+function err(e){show("err",e==="taken"?t().taken:e==="busy"?t().lockb:t().fail)}
+async function create(){const x=t(),nm=$("#fn").value.trim(),ph=$("#fp").value.trim();if(!nm||!ph){$("#fe").textContent=x.needs;return}
+const m=draft,r=roomId,p=proc(procId),end=m+p.dur,d0=date;
+try{let n;await lock(r+"_"+d0,async()=>{const arr=await fresh();if(arr.some(b=>b.roomId===r&&act1(b)&&b.start<end&&b.end>m))throw "taken";n=arr.filter(b=>b.roomId===r).length+1;const ref=db.collection("bookings").doc();await ref.set({date:d0,roomId:r,procId:p.id,start:m,end,name:nm,phone:ph,status:"wait",n,hist:[{s:"wait",t:Date.now()}]});});
+draft=null;$("#frm").innerHTML="";show("ok","<b>"+x.done+"</b>: "+esc(nm)+" · №"+n+" · "+fmt(m)+" · "+esc(room(r).name))}catch(e){err(e);if(e==="taken"){draft=null;$("#frm").innerHTML=""}}}
+async function doMove(m){const b=B.find(z=>z.id===mv);if(!b)return;const dur=b.end-b.start,r=roomId,d0=date,end=m+dur;
+try{await lock(r+"_"+d0,async()=>{const arr=await fresh();if(arr.some(z=>z.id!==b.id&&z.roomId===r&&act1(z)&&z.start<end&&z.end>m))throw "taken";await db.doc("bookings/"+b.id).update({roomId:r,start:m,end})});mv=null;show("ok","<b>"+t().move+"</b>: "+esc(b.name)+" · "+fmt(m));renderList()}catch(e){err(e)}}
+async function setSt(id,s){const b=B.find(z=>z.id===id);if(!b)return;try{await db.doc("bookings/"+id).update({status:s,hist:(b.hist||[]).concat([{s,t:Date.now()}])});show("","")}catch(e){err(e)}}
+function openForm(m){draft=m;const x=t(),p=proc(procId);$("#frm").innerHTML='<div class="panel"><b>'+fmt(m)+'–'+fmt(m+p.dur)+' · '+esc(p.name)+' · '+esc(room(roomId).name)+' · '+esc(room(roomId).staff)+'</b><label for="fn">'+x.name+'</label><input id="fn" autocomplete="off"><label for="fp">'+x.phone+'</label><input id="fp" type="tel" inputmode="tel" placeholder="+7"><p id="fe" class="meta" role="alert"></p><div class="act"><button class="btn" data-act="save">'+x.book+'</button><button class="btn alt" data-act="close">'+x.cancel+'</button></div></div>';$("#fn").focus()}
+function closeForm(){draft=null;$("#frm").innerHTML=""}
+async function saveCfg(){try{await db.doc("config/main").set({rooms:adm.rooms,procs:adm.procs});show("ok",t().saved)}catch(e){err(e)}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act,v=b.dataset.v;
+if(a==="lang"){L=v;try{localStorage.setItem("procL",L)}catch(_){}renderTab();if(draft!=null)openForm(draft)}
+else if(a==="tab"){tab=v;show("","");closeForm();renderTab()}
+else if(a==="d"){date=v==="0"?iso(new Date()):addDays(date,+v);dayChanged()}
+else if(a==="room"){roomId=v;closeForm();renderTab()}
+else if(a==="qroom"){qRoom=v;renderTab()}
+else if(a==="slot"){show("","");mv?doMove(+v):openForm(+v)}
+else if(a==="close")closeForm();
+else if(a==="save")create();
+else if(a==="move"){mv=v;closeForm();renderList()}
+else if(a==="mvx"){mv=null;renderList()}
+else if(a==="st"){const p=v.split("|");setSt(p[0],p[1])}
+else if(a==="addR"){adm.rooms.push({id:"r"+Date.now(),name:"",staff:"",on:1});renderAdmin()}
+else if(a==="addP"){adm.procs.push({id:"p"+Date.now(),name:"",dur:30,on:1});renderAdmin()}
+else if(a==="saveCfg")saveCfg()});
+document.addEventListener("input",e=>{const g=e.target.dataset;if(!adm||!g.g)return;const o=adm[g.g][+g.i];o[g.f]=e.target.type==="checkbox"?(e.target.checked?1:0):g.f==="dur"?(+e.target.value||30):e.target.value});
+document.addEventListener("change",e=>{if(e.target.id==="dt"&&e.target.value){date=e.target.value;dayChanged()}else if(e.target.id==="pr"){procId=e.target.value;closeForm();renderList()}else if(e.target.dataset.g)e.target.dispatchEvent(new Event("input",{bubbles:true}))});
+function dayChanged(){closeForm();mv=null;B=[];show("","");sub();renderTab()}
+function localDb(){const K="procroom_v1",ls=new Set();
+const rd=()=>{try{return JSON.parse(localStorage.getItem(K)||"{}")}catch(e){return {}}};
+const wr=o=>{localStorage.setItem(K,JSON.stringify(o));ls.forEach(f=>f())};
+const snap=(p,o)=>({id:p.split("/").pop(),exists:o[p]!==undefined,data:()=>o[p]});
+const doc=p=>({id:p.split("/").pop(),path:p,
+async get(){return snap(p,rd())},
+async set(d){const o=rd();o[p]=d;wr(o)},
+async update(d){const o=rd();o[p]=Object.assign({},o[p],d);wr(o)},
+async acquire(){return {acquired:true}},
+onSnapshot(n){const f=()=>n(snap(p,rd()));ls.add(f);setTimeout(f,0);return()=>ls.delete(f)}});
+const qs=(c,fl)=>{const o=rd(),pre=c+"/";const docs=Object.keys(o).filter(k=>k.startsWith(pre)&&k.indexOf("/",pre.length)<0&&fl.every(f=>o[k][f[0]]===f[2])).map(k=>snap(k,o));return {docs,size:docs.length,empty:!docs.length}};
+const col=(c,fl)=>{fl=fl||[];return {where:(f,op,v)=>col(c,fl.concat([[f,op,v]])),async get(){return qs(c,fl)},onSnapshot(n){const f=()=>n(qs(c,fl));ls.add(f);setTimeout(f,0);return()=>ls.delete(f)},doc:id=>doc(c+"/"+(id||Math.random().toString(36).slice(2)+Date.now().toString(36)))}};
+window.addEventListener("storage",e=>{if(e.key===K)ls.forEach(f=>f())});
+return {doc:doc,collection:c=>col(c)}}
+async function boot(){try{L=localStorage.getItem("procL")||"ru"}catch(_){}
+head();
+try{db=localDb();user={canEdit:async()=>true}}catch(_){}
+if(!db){renderTab();return}
+try{isAdmin=user?await user.canEdit():false}catch(_){}
+fixSel();
+db.doc("config/main").onSnapshot(s=>{if(s.exists)cfg=s.data();fixSel();if(tab!=="admin"||!adm){if(draft==null)renderTab()}},()=>{});
+sub();renderTab()}
+boot();
+</script>
+</body>
+</html>
